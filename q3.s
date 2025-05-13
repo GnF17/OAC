@@ -1,3 +1,4 @@
+#[-b+-sqrt(b^2-4*a*c)]/2*a
 #https://www.eecs.yorku.ca/course_archive/2022-23/F/2021A/RVS/RVS-IOsyscalls008.pdf
 #https://jupitersim.gitbook.io/jupiter/assembler/ecalls
 .data 
@@ -73,7 +74,7 @@ baskara:
 	fsub.s ft1, ft1, ft4
 	
 	# verificando se a raiz será conjugada
-	blt t1, ft1, zeroo
+	#blt ft1, zeroo, 
 	# indicar que é conjudada
 	
 	# raiz quadrada de delta
@@ -99,13 +100,11 @@ baskara:
 	ret
 
 pilha:
-	addi a0, t0, 0
-	addi a1, t0, 0
-	addi a2, t0, 0
-	
+	addi a0, t0, 1
 	sw a0, 8(sp)
-	sw a1, 4(sp)
-	sw a2, 0(sp)
+	sw fs0, 4(sp)
+	sw fs1, 0(sp)
+	ret
 
 show: 
 	lw a0, 0(sp)
