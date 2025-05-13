@@ -1,9 +1,10 @@
+#[-b+-sqrt(b^2-4*a*c)]/2*a
 #https://www.eecs.yorku.ca/course_archive/2022-23/F/2021A/RVS/RVS-IOsyscalls008.pdf
 #https://jupitersim.gitbook.io/jupiter/assembler/ecalls
-
 .data 
 quatro: .float 4.0
 dois: .float 2.0
+zeroo: .float 0.0
 
 .globl __start
 
@@ -26,6 +27,9 @@ __start:
  ecall # Armazena o valor em fa0
  fmv.s ft2, fa0  # Copia o valor float de fa0 para ft0
 
+# verificando se é uma equação de segundo grau
+flt.s t0, ft0, zeroo
+
 # -b
 fneg.s ft3, ft1 
 
@@ -42,6 +46,9 @@ fmul.s ft4, ft5, ft2
 # b²-e
 fsub.s ft1, ft1, ft4
 
+# verificando se a raiz será conjugada
+flt.s t1, ft1, zeroo
+
 # raiz quadrada de delta
 fsqrt.s ft1, ft1
 
@@ -57,5 +64,3 @@ fmv.s fs0, ft7
 fsub.s ft8, ft3, ft1
 fdiv.s ft8, ft8, ft6
 fmv.s fs1, ft8
-
-
