@@ -1,6 +1,6 @@
-#[-b+-sqrt(b^2-4*a*c)]/2*a
 #https://www.eecs.yorku.ca/course_archive/2022-23/F/2021A/RVS/RVS-IOsyscalls008.pdf
 #https://jupitersim.gitbook.io/jupiter/assembler/ecalls
+
 .data 
 quatro: .float 4.0
 dois: .float 2.0
