@@ -86,6 +86,12 @@ baskara:
 	# verificando se a raiz ser? conjugada
 	#blt ft1, zeroo, complexo
 	# indicar que ? conjudada
+	# Verifica se Δ < 0 (raízes complexas)
+	la t1, zeroo
+	flw ft9, 0(t1)      # Carrega 0.0 para comparação
+	flt.s t0, ft1, ft9  # Se Δ < 0, t0 = 1; senão, t0 = 0
+	bnez t0, complexo   # Pula para 'complexo' se Δ < 0
+    
 	
 	# raiz quadrada de delta
 	fsqrt.s ft1, ft1
@@ -116,25 +122,25 @@ baskara:
 
 complexo:
 	# m?dulo de ? (|?|)
-    fabs.s ft1, ft1       # ft1 = |?|
+    	fabs.s ft1, ft1       # ft1 = |?|
 
 	# ?|?|
-    fsqrt.s ft1, ft1      # ft1 = ?|?|
+    	fsqrt.s ft1, ft1      # ft1 = ?|?|
 
 	# 2*a 
-    la t1, dois       # Carrega o endere�o de 'dois' em t1
+    	la t1, dois       # Carrega o endere�o de 'dois' em t1
 	flw ft6, 0(t1)    # Carrega o valor 2.0 em ft6
-    fmul.s ft6, ft6, ft0  # ft6 = 2a
+    	fmul.s ft6, ft6, ft0  # ft6 = 2a
 
 	# Parte real: -b/(2a) 
-    fdiv.s ft7, ft3, ft6  # ft7 = parte real (-b/2a)
+    	fdiv.s ft7, ft3, ft6  # ft7 = parte real (-b/2a)
 
 	# Parte imagin?ria: ?|?|/(2a)
-    fdiv.s ft8, ft1, ft6  # ft8 = parte imagin?ria (?|?|/2a)
+    	fdiv.s ft8, ft1, ft6  # ft8 = parte imagin?ria (?|?|/2a)
 
 	# Armazena as ra?zes complexas:
-    # fs0 = parte real + parte imagin?ria (x1)
-    # fs1 = parte real - parte imagin?ria (x2)
+    	# fs0 = parte real + parte imagin?ria (x1)
+    	# fs1 = parte real - parte imagin?ria (x2)
 	fmv.s fs0, ft7 # parte real
 	fmv.s fs1, ft8 # parte imagin?ria
 
@@ -142,12 +148,6 @@ complexo:
 	li a0, 2
 	jal pilha
 
-pilha:
-
-	sw a0, 8(sp) # armazena o 1 se for real e 2 se for complexo
-	fsw fs0, 4(sp) # armazena x1 ou parte real
-	fsw fs1, 0(sp) # armazena x2 ou parte imagin?ria
-	ret
 
 show:
 	# Recupera valores da pilha
@@ -162,78 +162,88 @@ show:
 
 show_real:
 	# Imprime R(1) = x1
-    li a7, 4
-    la a0, msg_raiz1
-    ecall
+	li a7, 4
+	la a0, msg_raiz1
+	ecall
 
 	li a7, 2
-    fmv.s fa0, ft0
-    ecall
+        fmv.s fa0, ft0
+        ecall
 
 	# Imprime \n
-    li a7, 11
-    li a0, '\n'
-    ecall
+        li a7, 11
+        li a0, '\n'
+        ecall
 
-    # Imprime R(2) = x2
-    li a7, 4
-    la a0, msg_raiz2
-    ecall
+        # Imprime R(2) = x2
+        li a7, 4
+        la a0, msg_raiz2
+        ecall
 
-    li a7, 2
-    fmv.s fa0, ft1
-    ecall
+        li a7, 2
+        fmv.s fa0, ft1
+        ecall
 
-    j end_show
+        j end_show
 
 show_complex:
 	# Imprime R(1) = real + imagin?ria i
-    li a7, 4
-    la a0, msg_raiz1
-    ecall
+    	li a7, 4
+    	la a0, msg_raiz1
+    	ecall
 
-    li a7, 2
-    fmv.s fa0, ft0     # Parte real
-    ecall
+    	li a7, 2
+    	fmv.s fa0, ft0     # Parte real
+    	ecall
 
-    li a7, 4
-    la a0, msg_plus
-    ecall
+    	li a7, 4
+    	la a0, msg_plus
+    	ecall
 
-    li a7, 2
-    fmv.s fa0, ft1     # Parte imagin?ria
-    ecall
+    	li a7, 2
+    	fmv.s fa0, ft1     # Parte imagin?ria
+    	ecall
 
-    li a7, 4
-    la a0, msg_i
-    ecall
+    	li a7, 4
+    	la a0, msg_i
+    	ecall
 
 	# Imprime \n
-    li a7, 11
-    li a0, '\n'
-    ecall
+    	li a7, 11
+    	li a0, '\n'
+    	ecall
 
-    # Imprime R(2) = real - imagin?ria i
-    li a7, 4
-    la a0, msg_raiz2
-    ecall
+    	# Imprime R(2) = real - imagin?ria i
+    	li a7, 4
+    	la a0, msg_raiz2
+    	ecall
 
-    li a7, 2
-    fmv.s fa0, ft0     # Parte real
-    ecall
+    	li a7, 2
+    	fmv.s fa0, ft0     # Parte real
+    	ecall
 
-    li a7, 4
-    la a0, msg_minus
-    ecall
+    	li a7, 4
+    	la a0, msg_minus
+    	ecall
 
-    li a7, 2
-    fmv.s fa0, ft1     # Parte imagin?ria
-    ecall
+    	li a7, 2
+    	fmv.s fa0, ft1     # Parte imagin?ria
+    	ecall
 
-    li a7, 4
-    la a0, msg_i
-    ecall
+    	li a7, 4
+    	la a0, msg_i
+    	ecall
+    	
+    	li a7, 10
+    	ecall
 
 end_show:
-    ret
+    	ret
+    	
+pilha:
+
+	sw a0, 8(sp) # armazena o 1 se for real e 2 se for complexo
+	fsw fs0, 4(sp) # armazena x1 ou parte real
+	fsw fs1, 0(sp) # armazena x2 ou parte imagin?ria
+	ret
 
