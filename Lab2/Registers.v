@@ -17,11 +17,6 @@ reg [31:0] registers[31:0];
 
 parameter  SPR=5'd2, GPR=5'd3;                    // SP e GP
 
-localparam
-    TEXT_ADDRESS  = 32'h0040_0000,
-    DATA_ADDRESS  = 32'h1001_0000,
-    STACK_ADDRESS = 32'h1001_03FC;
-
 reg [5:0] i;
 
 initial
