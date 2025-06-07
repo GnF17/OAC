@@ -1,39 +1,56 @@
+`include "Parametros.v"
+
 module ULAControl (
     input logic [6:0] opcode,   // OpCode da instrução
-    input logic [2:0] funct3,    // Funct3 da instrução (para diferenciar as operações)
-    input logic funct7,          // Funct7 para operações como add/sub (funct7[5] para a instrucao sub - 0100000)
-    output logic [4:0] iControl  // Sinal de controle para a ULA
+    input logic [2:0] funct3,   // Funct3 da instrução
+    input logic funct7,         // Bit 5 do funct7 (para sub)
+    output logic [4:0] iControl // Sinal de controle para a ULA
 );
 
-// Definir os valores de controle da ULA
-localparam OPADD = 5'b00011;
-localparam OPSUB = 5'b00100;
-localparam OPAND = 5'b00000;
-localparam OPOR  = 5'b00001;
-localparam OPSLT = 5'b00101;
-localparam OPZERO = 5'b11111;
+// Definir valores de controle da ULA (consistentes com Parametros.v)
+localparam 
+    OPADD  = 5'd3,  // 5'b00011
+    OPSUB  = 5'd4,  // 5'b00100
+    OPAND  = 5'd0,  // 5'b00000
+    OPOR   = 5'd1,  // 5'b00001
+    OPSLT  = 5'd5,  // 5'b00101
+    OPZERO = 5'd31; // 5'b11111 (OPNULL)
 
 always_comb begin
-    // Valor padrão para iControl (ajuda a evitar 'XXXXX')
-    iControl <= OPZERO;  // Valor padrão de segurança, garantindo que iControl sempre terá um valor válido
+    iControl <= OPZERO; // Valor padrão (saída zero)
 
     case (opcode)
-        7'b0110011:  // R-type
+        OPC_RTYPE: begin // Tipo R (add, sub, and, or, slt)
             case (funct3)
-                3'b000: begin
-                    if (funct7) begin // SUB
-                        iControl <= OPSUB;
-                    end else begin                 // ADD
-                        iControl <= OPADD;
-						  end
-                end
-                3'b111: iControl <= OPAND; // AND
-                3'b110: iControl <= OPOR;  // OR
-                3'b010: iControl <= OPSLT; // SLT				
-                default: iControl <= OPZERO; // Default (caso não seja nenhuma operação válida)
+                3'b000: iControl <= (funct7) ? OPSUB : OPADD;
+                3'b111: iControl <= OPAND;
+                3'b110: iControl <= OPOR;
+                3'b010: iControl <= OPSLT;
+                default: iControl <= OPZERO;
             endcase
-        default: iControl <= OPZERO; // OpCode inválido ou não suportado
+        end
+
+        OPC_LOAD:  iControl <= OPADD;  // lw (cálculo de endereço)
+        OPC_STORE: iControl <= OPADD;  // sw (cálculo de endereço)
+
+        OPC_BRANCH: begin // beq (subtração para comparação)
+            if (funct3 == FUNCT3_BEQ) iControl <= OPSUB;
+            else iControl <= OPZERO;
+        end
+
+        OPC_JALR: begin // jalr (adição: rs1 + imm)
+            if (funct3 == FUNCT3_JALR) iControl <= OPADD;
+            else iControl <= OPZERO;
+        end
+
+        OPC_JAL:   iControl <= OPZERO; // jal (não usa ULA)
+
+        OPC_OPIMM: begin // addi (adição: rs1 + imm)
+            if (funct3 == FUNCT3_ADD) iControl <= OPADD;
+            else iControl <= OPZERO;
+        end
+
+        default: iControl <= OPZERO; // Instrução não suportada
     endcase
 end
-
 endmodule
